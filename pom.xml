@@ -18,8 +18,9 @@
         <module>core</module>
         <module>examples</module>
         <module>tools</module>
-        <module>tools</module>
         <module>streaming</module>
+        <module>common/common-utils</module>
+        <module>common/tags</module>
     </modules>
     <properties>
         <sbt.project.name>spark</sbt.project.name>
@@ -32,10 +33,46 @@
         <commons.math3.version>3.6.1</commons.math3.version>
         <scala.version>2.12.17</scala.version>
         <asm.version>9.5</asm.version>
+        <fasterxml.jackson.databind.version>2.15.2</fasterxml.jackson.databind.version>
+        <fasterxml.jackson.version>2.15.2</fasterxml.jackson.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <log4j.version>2.20.0</log4j.version>
+        <!--
+      Dependency scopes that can be overridden by enabling certain profiles. These profiles are
+      declared in the projects that build assemblies.
+
+      For other projects the scope should remain as "compile", otherwise they are not available
+      during compilation if the dependency is transitive (e.g. "graphx/" depending on "core/" and
+      needing Hadoop classes in the classpath to compile).
+    -->
+        <hadoop.deps.scope>compile</hadoop.deps.scope>
+        <hive.deps.scope>compile</hive.deps.scope>
+        <hive.storage.version>2.8.1</hive.storage.version>
+        <hive.storage.scope>compile</hive.storage.scope>
+        <hive.common.scope>compile</hive.common.scope>
+        <hive.llap.scope>compile</hive.llap.scope>
+        <hive.serde.scope>compile</hive.serde.scope>
+        <hive.shims.scope>compile</hive.shims.scope>
+        <orc.deps.scope>compile</orc.deps.scope>
+        <parquet.deps.scope>compile</parquet.deps.scope>
+        <parquet.test.deps.scope>test</parquet.test.deps.scope>
+
+        <spark.yarn.isHadoopProvided>false</spark.yarn.isHadoopProvided>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-tags_${scala.binary.version}</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-tags_${scala.binary.version}</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
@@ -68,6 +105,62 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${fasterxml.jackson.databind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_${scala.binary.version}</artifactId>
+                <version>${fasterxml.jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.10.0</version>
+            </dependency>
+            <!-- log4j -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>${hadoop.deps.scope}</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <!-- runtime scope is appropriate, but causes SBT build problems -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j2-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <!-- API bridge between log4j 1 and 2 -->
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-1.2-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <!-- end -->
         </dependencies>
     </dependencyManagement>
 </project>
